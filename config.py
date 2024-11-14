@@ -1,14 +1,13 @@
-import os
 from pathlib import Path
 
 # Base directory of the project
 BASE_DIR = Path(__file__).resolve().parent
 
 # Database
-DATABASE_URL = 'sqlite:///invoice_system.db'
+DATABASE_URL = "sqlite:///invoice_system.db"
 
 # PDF Configuration
-PDF_OUTPUT_DIR = BASE_DIR / 'pdfs'
+PDF_OUTPUT_DIR = BASE_DIR / "pdfs"
 if not PDF_OUTPUT_DIR.exists():
     PDF_OUTPUT_DIR.mkdir(parents=True)
 
@@ -21,36 +20,31 @@ COMPANY_EMAIL = "your@email.com"
 COMPANY_WEBSITE = "www.yourcompany.com"
 
 # Logging Configuration
-LOG_DIR = BASE_DIR / 'logs'
+LOG_DIR = BASE_DIR / "logs"
 if not LOG_DIR.exists():
     LOG_DIR.mkdir(parents=True)
 
 LOGGING_CONFIG = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'standard': {
-            'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        },
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"},
     },
-    'handlers': {
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': LOG_DIR / 'invoice_generator.log',
-            'formatter': 'standard'
+    "handlers": {
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": LOG_DIR / "invoice_generator.log",
+            "formatter": "standard",
         },
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'standard'
+        "console": {"class": "logging.StreamHandler", "formatter": "standard"},
+    },
+    "loggers": {
+        "": {  # root logger
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": True,
         }
     },
-    'loggers': {
-        '': {  # root logger
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': True
-        }
-    }
 }
 
 # Email Configuration (if needed)

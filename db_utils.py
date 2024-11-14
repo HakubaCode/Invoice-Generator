@@ -1,4 +1,4 @@
-from database import Session, Customer, Invoice, InvoiceItem
+from database import Session, Customer, Invoice  # Remove unused InvoiceItem
 from sqlalchemy import text
 
 def print_table_contents():
@@ -14,17 +14,22 @@ def print_table_contents():
         print("\n=== Invoices ===")
         invoices = session.query(Invoice).all()
         for invoice in invoices:
-            print(f"ID: {invoice.id}, Number: {invoice.invoice_number}, "
-                  f"Customer: {invoice.customer.name}, Total: ${invoice.total_amount:.2f}")
+            print(
+                f"ID: {invoice.id}, Number: {invoice.invoice_number}, "
+                f"Customer: {invoice.customer.name}, Total: ${invoice.total_amount:.2f}"
+            )
 
             # Print Invoice Items
             print("  Items:")
             for item in invoice.items:
-                print(f"    - {item.quantity}x {item.description} "
-                      f"@ ${item.unit_price:.2f} = ${item.total:.2f}")
+                print(
+                    f"    - {item.quantity}x {item.description} "
+                    f"@ ${item.unit_price:.2f} = ${item.total:.2f}"
+                )
 
     finally:
         session.close()
+
 
 def run_custom_query(query):
     session = Session()
@@ -34,6 +39,7 @@ def run_custom_query(query):
             print(row)
     finally:
         session.close()
+
 
 if __name__ == "__main__":
     import sys

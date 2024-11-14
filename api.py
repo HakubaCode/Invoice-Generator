@@ -1,13 +1,14 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException  # Remove unused Depends
 from pydantic import BaseModel, EmailStr, constr, confloat, conint
-from typing import List, Optional
-from datetime import date
-from invoice_generator import InvoiceGenerator
-from database import Session, Customer, Invoice
+from typing import List, Optional  
+from invoice_generator import InvoiceGenerator  # Remove unused datetime.date
 import uvicorn
+
+
 
 app = FastAPI(title="Invoice Generator API", version="1.0.0")
 generator = InvoiceGenerator()
+
 
 class CustomerCreate(BaseModel):
     name: constr(min_length=1, max_length=100)
@@ -15,27 +16,28 @@ class CustomerCreate(BaseModel):
     address: Optional[str]
     phone: Optional[str]
 
+
 class InvoiceItemCreate(BaseModel):
     description: constr(min_length=1, max_length=255)
     quantity: conint(gt=0)
     unit_price: confloat(gt=0)
 
+
 class InvoiceCreate(BaseModel):
     customer_id: int
     items: List[InvoiceItemCreate]
+
 
 @app.post("/customers/", response_model=dict)
 async def create_customer(customer: CustomerCreate):
     try:
         customer_id = generator.create_customer(
-            customer.name,
-            customer.email,
-            customer.address,
-            customer.phone
+            customer.name, customer.email, customer.address, customer.phone
         )
         return {"id": customer_id, "message": "Customer created successfully"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
 
 @app.post("/invoices/", response_model=dict)
 async def create_invoice(invoice: InvoiceCreate):
@@ -46,6 +48,7 @@ async def create_invoice(invoice: InvoiceCreate):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
 @app.get("/customers/")
 async def list_customers():
     session = Session()
@@ -55,20 +58,25 @@ async def list_customers():
     finally:
         session.close()
 
+
 @app.get("/invoices/")
 async def list_invoices():
     session = Session()
     try:
         invoices = session.query(Invoice).all()
-        return [{
-            "id": i.id,
-            "invoice_number": i.invoice_number,
-            "customer_name": i.customer.name,
-            "total_amount": i.total_amount,
-            "date": i.date
-        } for i in invoices]
+        return [
+            {
+                "id": i.id,
+                "invoice_number": i.invoice_number,
+                "customer_name": i.customer.name,
+                "total_amount": i.total_amount,
+                "date": i.date,
+            }
+            for i in invoices
+        ]
     finally:
         session.close()
+
 
 @app.get("/invoices/{invoice_id}/pdf")
 async def generate_pdf(invoice_id: int):
@@ -77,6 +85,7 @@ async def generate_pdf(invoice_id: int):
         return {"filename": filename, "message": "PDF generated successfully"}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
